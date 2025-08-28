@@ -1,8 +1,8 @@
 <?php
 $host = "localhost";
-$dbname = "u683623856_esp_data";
-$username = "u683623856_esp_user";
-$password = "Esp_pass321";
+$dbname = "esp_data";
+$username = "esp_user";
+$password = "Esp_pass";
 
 $suhu = $_POST['suhu'];
 $kelembapan = $_POST['kelembapan'];
