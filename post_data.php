@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set('Asia/Jakarta');
-$conn = mysqli_connect("localhost", "u683623856_esp_user", "Esp_pass321", "u683623856_esp_data");
+$conn = mysqli_connect("localhost", "esp_user", "Esp_pass", "esp_data");
 
 $device     = $_POST['device_id'] ?? null;
 $lat        = $_POST['lat'] ?? null;
