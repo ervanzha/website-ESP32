@@ -1,11 +1,10 @@
 <?php
 session_start();
 
-// GANTI dengan data database kamu
 $host = 'localhost';
-$dbuser = 'u683623856_esp_user';
-$dbpass = 'Esp_pass321';
-$dbname = 'u683623856_esp_data';
+$dbuser = 'esp_user';
+$dbpass = 'Esp_pass';
+$dbname = 'esp_data';
 
 $conn = mysqli_connect($host, $dbuser, $dbpass, $dbname);
 if (!$conn) {
