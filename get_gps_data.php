@@ -1,5 +1,5 @@
 <?php
-$conn = mysqli_connect("localhost", "u683623856_esp_user", "Esp_pass321", "u683623856_esp_data");
+$conn = mysqli_connect("localhost", "esp_user", "Esp_pass", "esp_data");
 
 $query = "SELECT gps1.device_id, gps1.latitude, gps1.longitude
           FROM gps_data gps1
