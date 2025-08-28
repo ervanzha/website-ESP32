@@ -17,14 +17,12 @@ if (!$conn) {
 
 $role = $_SESSION['role'];
 
-// Ambil 20 data terbaru untuk grafik dan tabel
 $sensorData = mysqli_query($conn, "SELECT * FROM sensor_data ORDER BY waktu DESC LIMIT 20");
 $dataSensor = mysqli_fetch_all($sensorData, MYSQLI_ASSOC);
 
 $ldrData = mysqli_query($conn, "SELECT * FROM ldr_data ORDER BY waktu DESC LIMIT 20");
 $dataLdr = mysqli_fetch_all($ldrData, MYSQLI_ASSOC);
 
-// Ambil data terbaru untuk tampilan ringkasan (opsional, jika masih ingin ditampilkan di tempat lain)
 $latestSensor = mysqli_query($conn, "SELECT suhu, kelembapan, waktu FROM sensor_data ORDER BY waktu DESC LIMIT 1");
 $latestLdr = mysqli_query($conn, "SELECT nilai, waktu FROM ldr_data ORDER BY waktu DESC LIMIT 1");
 
@@ -97,9 +95,8 @@ $latestLdrTime = mysqli_fetch_assoc($latestLdr)['waktu'] ?? 'N/A';
             display: block;
         }
 
-        /* Beranda Section - Card Layout (Inspired by image_da811a.jpg) */
         #beranda {
-            padding: 0; /* Remove padding from section itself, handled by main-content-wrapper */
+            padding: 0; 
         }
         .card-info {
             border: none;
@@ -115,8 +112,8 @@ $latestLdrTime = mysqli_fetch_assoc($latestLdr)['waktu'] ?? 'N/A';
         }
         .card-info img {
             width: 100%;
-            height: 250px; /* Fixed height for images */
-            object-fit: cover; /* Cover the area, cropping if necessary */
+            height: 250px;
+            object-fit: cover; 
         }
         .card-info .card-body {
             padding: 25px;
@@ -394,14 +391,14 @@ function showSection(id) {
     }
 }
 
-// Data untuk Chart.js
+
 const waktuSensor = <?= json_encode(array_reverse(array_column($dataSensor, 'waktu'))) ?>;
 const suhu = <?= json_encode(array_reverse(array_column($dataSensor, 'suhu'))) ?>;
 const kelembapan = <?= json_encode(array_reverse(array_column($dataSensor, 'kelembapan'))) ?>;
 const waktuLdr = <?= json_encode(array_reverse(array_column($dataLdr, 'waktu'))) ?>;
 const ldr = <?= json_encode(array_reverse(array_column($dataLdr, 'nilai'))) ?>;
 
-// Inisialisasi Chart Suhu
+
 new Chart(document.getElementById('chartSuhu'), {
     type: 'line',
     data: {
@@ -420,7 +417,7 @@ new Chart(document.getElementById('chartSuhu'), {
     }
 });
 
-// Inisialisasi Chart Kelembapan
+
 new Chart(document.getElementById('chartKelembapan'), {
     type: 'line',
     data: {
@@ -439,7 +436,7 @@ new Chart(document.getElementById('chartKelembapan'), {
     }
 });
 
-// Inisialisasi Chart LDR
+
 new Chart(document.getElementById('chartLdr'), {
     type: 'line',
     data: {
@@ -458,7 +455,7 @@ new Chart(document.getElementById('chartLdr'), {
     }
 });
 
-// Inisialisasi Map Leaflet
+
 let map = L.map('map').setView([-6.2, 106.8], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
@@ -486,7 +483,7 @@ setInterval(loadMarkers, 5000);
 loadMarkers();
 
 document.addEventListener('DOMContentLoaded', function() {
-    showSection('beranda'); // Ensure Beranda is active on load
+    showSection('beranda'); 
 });
 </script>
 </body>
