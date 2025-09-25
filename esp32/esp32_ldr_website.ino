@@ -1,6 +1,6 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
- 
+  
 #define LDR_PIN 33
 #define BUZZER_PIN 27
 
