@@ -1,0 +1,102 @@
+#include <WiFi.h>
+#include <micro_ros_arduino.h>
+#include <rcl/rcl.h>
+#include <rclc/rclc.h>
+#include <rclc/executor.h>
+#include <std_msgs/msg/int32.h>
+
+#define LDR_PIN 33
+#define BUZZER_PIN 27
+
+// Batasan
+const int ambangTerang = 2800;
+const int ambangGelap = 50;
+
+bool sudahBunyiTerang = false;
+bool sudahBunyiGelap = false;
+
+// Koneksi WiFi
+char ssid[] = "FTI-USAKTI";
+char password[] = "trisakti2022";
+
+// IP laptop kamu (Wireshark)
+char agent_ip[] = "10.24.81.23"; // Ganti IP laptop kamu
+size_t agent_port = 8888;
+
+// micro-ROS variabel
+rcl_publisher_t publisher;
+rcl_node_t node;
+rclc_support_t support;
+rcl_allocator_t allocator;
+std_msgs_msg_Int32 ldr_msg;
+
+void bunyiCepat(int jumlahTit, int durasi = 100, int jeda = 100) {
+  for (int i = 0; i < jumlahTit; i++) {
+    digitalWrite(BUZZER_PIN, HIGH);
+    delay(durasi);
+    digitalWrite(BUZZER_PIN, LOW);
+    delay(jeda);
+  }
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(LDR_PIN, INPUT);
+  pinMode(BUZZER_PIN, OUTPUT);
+  digitalWrite(BUZZER_PIN, LOW);
+
+  // Koneksi WiFi
+  WiFi.begin(ssid, password);
+  Serial.print("Menghubungkan ke WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nWiFi terhubung!");
+  bunyiCepat(2);
+
+  // Koneksi micro-ROS ke agent IP (Wireshark)
+  set_microros_wifi_transports(ssid, password, agent_ip, agent_port);
+  delay(2000);
+
+  allocator = rcl_get_default_allocator();
+  rclc_support_init(&support, 0, NULL, &allocator);
+  rclc_node_init_default(&node, "esp32_ldr_node", "", &support);
+
+  rclc_publisher_init_default(
+    &publisher,
+    &node,
+    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
+    "ldr_data"
+  );
+
+  bunyiCepat(3);
+}
+
+void loop() {
+  int ldrValue = analogRead(LDR_PIN);
+  Serial.printf("[LDR] Nilai: %d\n", ldrValue);
+
+  ldr_msg.data = ldrValue;
+  rcl_ret_t rc = rcl_publish(&publisher, &ldr_msg, NULL);
+  if (rc != RCL_RET_OK) {
+    Serial.println("Gagal kirim data via micro-ROS!");
+  } else {
+    Serial.printf("Berhasil publish LDR: %d\n", ldrValue);
+  }
+
+  // Logika buzzer
+  if (ldrValue > ambangTerang && !sudahBunyiTerang) {
+    Serial.println("[BUZZER] Terlalu Terang!");
+    bunyiCepat(2);
+    sudahBunyiTerang = true;
+    sudahBunyiGelap = false;
+  } else if (ldrValue < ambangGelap && !sudahBunyiGelap) {
+    Serial.println("[BUZZER] Terlalu Gelap!");
+    bunyiCepat(3);
+    sudahBunyiGelap = true;
+    sudahBunyiTerang = false;
+  }
+
+  delay(5000);  // Publish setiap 5 detik
+}
